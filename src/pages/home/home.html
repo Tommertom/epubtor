@@ -1,12 +1,18 @@
 <ion-content padding>
-  <h2>Pinocchio</h2>
- 
+  <h2>Pinocchio 3</h2>
+
   <ion-list>
-    <ion-item text-wrap *ngFor="let line of storyLines" (click)="lineSelected(line)">
+    <button ion-item text-wrap *ngFor="let line of storyLines" (click)="lineSelected(line)">
       {{ line.sourceTxt }}
       <span *ngIf="line.showTranslation">
-        <hr> <small>{{line.destText}}</small> 
+        <hr>
+        <small>{{line.destText}}</small>
       </span>
-    </ion-item>
+    </button>
   </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
 </ion-content>

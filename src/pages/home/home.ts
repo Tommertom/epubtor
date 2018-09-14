@@ -16,41 +16,53 @@ interface ePubLine {
 export class HomePage {
 
   storyLines: Array<ePubLine> = [];
+  rawLines: Array<string> = [];
+  lastScrollLine = 0;
 
   constructor(public navCtrl: NavController, private http: HttpClient) {
     this.http.get('assets/txtbooks/las_aventuras_de_pinocho.txt', { responseType: 'text' })
       .subscribe((data) => {
         this.storyLines = [];
-        let rawLines = data.split("\n");
-        rawLines.map(line => {
+        this.rawLines = [];
+        let loadedLines = data.split("\n");
+        loadedLines.map(line => {
           if (line.length > 1)
-            this.storyLines.push({
-              sourceTxt: line,
-              destText: '',
-              showTranslation: false
-            })
+            this.rawLines.push(line);
         })
-        console.log('adsada', this.storyLines)
+        this.loadNextLines();
       });
   }
 
-  /*
-var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
-          + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
- 
-var result = JSON.parse(UrlFetchApp.fetch(url).getContentText());
- 
-translatedText = result[0][0][0];
- 
-var json = {
-  'sourceText' : sourceText,
-  'translatedText' : translatedText
-};
+  loadNextLines() {
 
-https://ctrlq.org/code/19909-google-translate-api
+    //lastScrollLine
+    let numberToLoad = 50;
 
-https://github.com/matheuss/google-translate-api
-*/
+    console.log('loading', this.lastScrollLine);
+
+    if (this.lastScrollLine < this.rawLines.length)
+      while (numberToLoad > 0) {
+        if (this.lastScrollLine < this.rawLines.length)
+          this.storyLines.push({
+            sourceTxt: this.rawLines[this.lastScrollLine],
+            destText: '',
+            showTranslation: false
+          });
+
+        this.lastScrollLine += 1;
+        numberToLoad -= 1;
+      }
+  }
+
+  doInfinite(infiniteScroll) {
+
+
+    this.loadNextLines();
+
+    setTimeout(() => {
+      infiniteScroll.complete();
+    }, 500);
+  }
 
   lineSelected(item) {
 
@@ -87,3 +99,21 @@ https://github.com/matheuss/google-translate-api
   }
 
 }
+
+  /*
+var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
+          + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
+ 
+var result = JSON.parse(UrlFetchApp.fetch(url).getContentText());
+ 
+translatedText = result[0][0][0];
+ 
+var json = {
+  'sourceText' : sourceText,
+  'translatedText' : translatedText
+};
+
+https://ctrlq.org/code/19909-google-translate-api
+
+https://github.com/matheuss/google-translate-api
+*/
