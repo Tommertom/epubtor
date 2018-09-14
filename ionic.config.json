@@ -1,0 +1,7 @@
+{
+  "name": "epubtutor",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}
