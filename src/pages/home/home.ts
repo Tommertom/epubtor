@@ -23,12 +23,14 @@ export class HomePage {
         this.storyLines = [];
         let rawLines = data.split("\n");
         rawLines.map(line => {
-          this.storyLines.push({
-            sourceTxt: line,
-            destText: '',
-            showTranslation: false
-          })
+          if (line.length > 1)
+            this.storyLines.push({
+              sourceTxt: line,
+              destText: '',
+              showTranslation: false
+            })
         })
+        console.log('adsada', this.storyLines)
       });
   }
 
@@ -69,8 +71,15 @@ https://github.com/matheuss/google-translate-api
 
         this.http.get(url)
           .subscribe(data => {
-            console.log('DATAATATA', data[0][0][0])
-            item.destText = data[0][0][0];
+
+            let sentences = data[0];
+            let finalTxt = "";
+            sentences.map(sentence => {
+              finalTxt += sentence[0]
+            })
+
+            console.log('DATAATATA', data[0], data[0][0][0])
+            item.destText = finalTxt;//data[0][0][0];
           })
       }
     }
