@@ -13,6 +13,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HttpClientModule } from '@angular/common/http';
 import { IonicStorageModule } from '@ionic/storage';
+import { BookTranslator } from '../providers/booktranslater.provider';
+
 
 @NgModule({
   declarations: [
@@ -25,7 +27,7 @@ import { IonicStorageModule } from '@ionic/storage';
   imports: [
     IonicStorageModule.forRoot({
       name: '__mydb',
-         driverOrder: ['indexeddb', 'sqlite', 'websql']
+      driverOrder: ['indexeddb', 'sqlite', 'websql']
     }),
     HttpClientModule,
     BrowserModule,
@@ -40,9 +42,10 @@ import { IonicStorageModule } from '@ionic/storage';
     TabsPage
   ],
   providers: [
+    BookTranslator,
     StatusBar,
     SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    { provide: ErrorHandler, useClass: IonicErrorHandler }
   ]
 })
-export class AppModule {}
+export class AppModule { }

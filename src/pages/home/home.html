@@ -3,19 +3,25 @@
 
   <ion-list>
     <button ion-item text-wrap *ngFor="let line of storyLines;let i=index" (click)="lineSelected(line)">
-      
+
 
       <div *ngIf="!line.showTranslation">
-        {{i}}  {{ line.sourceTxt }}
+        {{i}}<br> {{ line.sourceTxt }}
       </div>
 
       <div *ngIf="line.showTranslation">
-          {{i}}
+        {{i}}
+
+        <div *ngIf="line.translation.length==0">
+          {{ line.sourceTxt }}
+        </div>
+
         <div *ngFor="let s of line.translation">
           {{s.sentenceSource}}
           <hr>
           <small>{{s.sentenceDest}}</small>
-          <br><br>
+          <br>
+          <br>
         </div>
       </div>
 

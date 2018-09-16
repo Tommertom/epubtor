@@ -3,6 +3,9 @@ import { NavController } from 'ionic-angular';
 
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
+import { BookTranslator } from '../../providers/booktranslater.provider';
+
+
 
 interface TranslationCouple {
   sentenceSource: string;
@@ -28,18 +31,22 @@ export class HomePage {
   rawLines: Array<string> = [];
   lastScrollLine = 0;
 
-  constructor(private storage: Storage, public navCtrl: NavController, private http: HttpClient) {
+  constructor(
+    private bookTranslatorService: BookTranslator,
+    private storage: Storage, public navCtrl: NavController,
+    private http: HttpClient) {
 
     this.storage.ready()
       .then(() => {
-        return this.storage.get('pino')
+        return this.storage.get('pino2')
       })
       .then(val => {
         if (val != null) {
           this.rawLines = val;
           this.loadNextLines();
-        }
-        else this.http.get('assets/txtbooks/las_aventuras_de_pinocho.txt', { responseType: 'text' })
+        } //
+        //'assets/txtbooks/las_aventuras_de_pinocho.txt'
+        else this.http.get('assets/txtbooks/El Hobbit - J  R  R  Tolkien.txt', { responseType: 'text' })
           .subscribe((data) => {
             this.storyLines = [];
             this.rawLines = [];
@@ -54,7 +61,9 @@ export class HomePage {
           })
       });
 
+    this.bookTranslatorService.getTxtBookFromURL('assets/txtbooks/las_aventuras_de_pinocho.txt', 'pinochio')
 
+/*
     this.http.get('assets/txtbooks/jehle_verb_database.csv', { responseType: 'text' })
       .subscribe((data) => {
         // this.storyLines = [];
@@ -62,17 +71,48 @@ export class HomePage {
         let loadedLines = data.split("\n");
         let verbList = [];
         loadedLines.map(line => {
+          verbList.push(
+            line.split('"').filter(item => (item != ',') && (item.length > 1)))
 
-          verbList.push(line.split('"').filter(item => item != ','))
-          
+
           //  if (line.length > 1)
           //    this.rawLines.push(line);
         })
-        console.log('SPLIT', verbList );
+
+
+        // console.log('sa',verbList[1][16], verbList[0][17],verbList[0][17].length)
+
+
+        let verbTree = {}
+        verbList.map(verbMeta => {
+
+          let verb = verbMeta[0];
+
+          // create a new item if the verb does not exist
+          if (typeof verbTree[verb] == 'undefined')
+            verbTree[verb] = {
+              translation: verbMeta[1],
+              moods: {}
+            }
+
+          let verbMood = verbMeta[2];
+          verbTree[verb]['moods'][verbMood] = verbMeta.slice(-14);
+          //verbTree[verb]['moods'].push({ verbMood: verbMeta.slice(-14) });
+
+          // logging
+          if (verb == "abandonar") {
+            console.log('TO Parse', verbMeta);
+            console.log('mood', verbMood, verbTree[verb]['moods']);
+
+          }
+
+        })
+
 
         //  this.storage.set('pino', this.rawLines);
         // this.loadNextLines();
       })
+*/
   }
 
   loadNextLines() {
@@ -158,20 +198,3 @@ export class HomePage {
 
 }
 
-  /*
-var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
-          + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
- 
-var result = JSON.parse(UrlFetchApp.fetch(url).getContentText());
- 
-translatedText = result[0][0][0];
- 
-var json = {
-  'sourceText' : sourceText,
-  'translatedText' : translatedText
-};
-
-https://ctrlq.org/code/19909-google-translate-api
-
-https://github.com/matheuss/google-translate-api
-*/
