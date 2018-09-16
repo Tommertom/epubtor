@@ -2,12 +2,23 @@
   <h2>Pinocchio 3</h2>
 
   <ion-list>
-    <button ion-item text-wrap *ngFor="let line of storyLines" (click)="lineSelected(line)">
-      {{ line.sourceTxt }}
-      <span *ngIf="line.showTranslation">
-        <hr>
-        <small>{{line.destText}}</small>
-      </span>
+    <button ion-item text-wrap *ngFor="let line of storyLines;let i=index" (click)="lineSelected(line)">
+      
+
+      <div *ngIf="!line.showTranslation">
+        {{i}}  {{ line.sourceTxt }}
+      </div>
+
+      <div *ngIf="line.showTranslation">
+          {{i}}
+        <div *ngFor="let s of line.translation">
+          {{s.sentenceSource}}
+          <hr>
+          <small>{{s.sentenceDest}}</small>
+          <br><br>
+        </div>
+      </div>
+
     </button>
   </ion-list>
 

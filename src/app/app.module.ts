@@ -12,6 +12,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HttpClientModule } from '@angular/common/http';
+import { IonicStorageModule } from '@ionic/storage';
 
 @NgModule({
   declarations: [
@@ -22,6 +23,10 @@ import { HttpClientModule } from '@angular/common/http';
     TabsPage
   ],
   imports: [
+    IonicStorageModule.forRoot({
+      name: '__mydb',
+         driverOrder: ['indexeddb', 'sqlite', 'websql']
+    }),
     HttpClientModule,
     BrowserModule,
     IonicModule.forRoot(MyApp)
