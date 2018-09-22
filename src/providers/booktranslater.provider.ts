@@ -10,6 +10,10 @@ import { tap, filter, map } from 'rxjs/operators';
 }
 */
 
+
+/*
+https://www.e-stories.org/read-stories.php?sto=14537
+*/
 export interface Book {
     title: string;
     booklines: Array<LineTranslation>;

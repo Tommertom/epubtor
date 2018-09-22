@@ -1,8 +1,8 @@
 <ion-content padding>
-  <h2>Pinocchio 3</h2>
+  <h2 (click)="goToStuff()">Pinocchio 3</h2>
 
   <ion-list>
-    <button ion-item text-wrap *ngFor="let line of storyLines;let i=index" (click)="lineSelected(line)">
+    <button [id]="i" ion-item text-wrap *ngFor="let line of storyLines;let i=index" (click)="lineSelected(line,i)">
 
 
       <div *ngIf="!line.showTranslation">
