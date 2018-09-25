@@ -1,18 +1,21 @@
 <ion-content padding>
-  <h2>Hobbit</h2>
+  <h2>Verbs</h2>
 
+
+
+  <ion-searchbar (ionInput)="getItems($event)" showCancelButton="true" (ionCancel)="onCancel($event)"></ion-searchbar>
   <ion-list>
-    <button ion-item text-wrap *ngFor="let line of storyLines;let i=index" (click)="lineSelected(line)">
-     {{i}} {{ line.sourceTxt }}
-      <span *ngIf="line.showTranslation">
-        <hr>
-        <small>{{line.destText}}</small>
-      </span>
-    </button>
+    <ion-item *ngFor="let item of items" (click)="displayItem(item)">
+      {{ item }}
+      <br>
+      <small>{{verbTree[item].translation}}</small>
+    </ion-item>
   </ion-list>
 
-  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
-    <ion-infinite-scroll-content></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
+  <hr>
+
+  <pre>
+  {{conjugation}}
+</pre>
 
 </ion-content>

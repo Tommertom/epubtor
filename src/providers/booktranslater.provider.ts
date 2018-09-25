@@ -1,3 +1,4 @@
+import { Book } from './booktranslater.provider';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
@@ -8,20 +9,21 @@ import { tap, filter, map } from 'rxjs/operators';
 {
   providedIn: 'root',
 }
-*/
-
-
-/*
 https://www.e-stories.org/read-stories.php?sto=14537
 */
+
+
 export interface Book {
     title: string;
-    booklines: Array<LineTranslation>;
+    booklines: Array<BookLine>;
+    storeKey: string;
 }
 
-export interface BookList {
-    book: Book;
-    storeKey: string;
+export interface BookLine {
+    sourceLine: string;
+    destLine: string;
+    sentences: Array<TranslationSentences>;
+    index: number;
 }
 
 export interface TranslationSentences {
@@ -29,56 +31,91 @@ export interface TranslationSentences {
     sentenceDest: string;
 }
 
-export interface LineTranslation {
-    sourceLine: string;
-    destLine: string;
-    sentences: Array<TranslationSentences>;
-}
-
 @Injectable()
 export class BookTranslator {
 
-    books: Array<Book> = [];
-    booklist: Array<BookList> = [];
+    booklist: Array<string> = [];
 
     constructor(private storage: Storage, private http: HttpClient) { }
 
     //'assets/txtbooks/las_aventuras_de_pinocho.txt'
     getTxtBookFromURL(url: string, title: string) {
-        this.http.get(url, { responseType: 'text' })
-            .subscribe((data) => {
-
+        return this.http.get(url, { responseType: 'text' })
+            .toPromise()
+            .then((data) => {
                 // lets parse all the lines
                 let bookLines = [];
+                let linecount = 0;
                 let loadedLines = data.split("\n");
                 loadedLines.map(line => {
-                    if (line.length > 1)
+                    if (line.length > 1) {
                         bookLines.push({
                             sourceLine: line,
                             destLine: "",
-                            sentences: []
+                            sentences: [],
+                            index: linecount
                         });
+                        linecount += 1;
+                    }
                 })
-
-                let book = {
-                    title: title,
-                    booklines: bookLines
-                }
 
                 let storeKey = 'book-' + title;
-                this.booklist.push({
-                    book: book,
+                let book = {
+                    title: title,
+                    booklines: bookLines,
                     storeKey: storeKey
-                })
+                }
 
-                //and put the book in storage
+                // and put the book in storage
+                // side effect
                 this.storage.set(storeKey, book);
+                console.log('Book loaded from URL', book);
 
-                console.log('Book loaded ',book);
+                this.storage.get('booklist')
+                    .then(val => {
+                        if (val) this.booklist = val
+                        else this.booklist = [];
+                        this.booklist.push(storeKey);
+                        this.storage.set('booklist', this.booklist)
+                    })
+
+
+                return Promise.resolve(book);
             })
     }
 
-    translateLine<LineTranslation>(sourceLang, targetLang, sourceText) {
+    getBooklist() {
+        return this.storage.ready()
+            .then(() => { return this.storage.get('booklist') })
+    }
+
+    getBook<Book>(bookKey: string) {
+        return this.storage.ready()
+            .then(() => { return this.storage.get(bookKey) })
+    }
+
+    getTranslation(book: Book, index: number) {
+        let res;
+        if (book.booklines[index].destLine == "")
+            res = this.getGoogleTranslation('es', 'en', book.booklines[index].sourceLine)
+                .toPromise()
+                .then(val => {
+                    book.booklines[index].sourceLine = val.sourceLine;
+                    book.booklines[index].destLine = val.destLine;
+                    book.booklines[index].sentences = val.sentences;
+
+                    //   console.log('Translated and saved', book.booklines[index]);
+
+                    this.storage.set(book.storeKey, book);
+
+                    return Promise.resolve(book.booklines[index]);
+                })
+        else res = Promise.resolve(book.booklines[index]);
+
+        return res;
+    }
+
+    getGoogleTranslation(sourceLang, targetLang, sourceText) {
         sourceLang = "es";
         targetLang = "en";
 
@@ -112,21 +149,28 @@ export class BookTranslator {
                 }))
     }
 }
+    /*
 
-  /*
-var url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=" 
-          + sourceLang + "&tl=" + targetLang + "&dt=t&q=" + encodeURI(sourceText);
- 
-var result = JSON.parse(UrlFetchApp.fetch(url).getContentText());
- 
-translatedText = result[0][0][0];
- 
-var json = {
-  'sourceText' : sourceText,
-  'translatedText' : translatedText
-};
 
-https://ctrlq.org/code/19909-google-translate-api
-
-https://github.com/matheuss/google-translate-api
-*/
+    GOOGLE DOES NOT LIKE THIS
+       translateBook(book: Book, index: number) {
+   
+           console.log('calling trsn', index);
+   
+           if (index == book.booklines.length) return Promise.resolve(true)
+           else {
+               if (book.booklines[index].destLine != "") return this.translateBook(book, index + 1)
+               else {
+                   return this.getGoogleTranslation('es', 'en', book.booklines[index].sourceLine)
+                       .toPromise()
+                       .then(val => {
+                           book.booklines[index].destLine = val.destLine;
+                           book.booklines[index].sentences = val.sentences;
+                           console.log('Value received ', val, book.booklines[index]);
+                           return this.translateBook(book, index + 1);
+                       })
+   
+               }
+           }
+       }
+   */

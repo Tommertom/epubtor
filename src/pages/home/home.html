@@ -1,29 +1,41 @@
+<ion-header (click)="openBookSelector()">
+  <ion-navbar>
+    <ion-title >
+      {{book?.title}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
 <ion-content padding>
-  <h2 (click)="goToStuff()">Pinocchio 3</h2>
+
 
   <ion-list>
-    <button [id]="i" ion-item text-wrap *ngFor="let line of storyLines;let i=index" (click)="lineSelected(line,i)">
-
-
-      <div *ngIf="!line.showTranslation">
-        {{i}}<br> {{ line.sourceTxt }}
+    <button [id]="i" ion-item text-wrap *ngFor="let viewLine of viewLines;let i=index" (click)="selectLine(viewLine,i)">
+      {{i}}
+      <div *ngIf="!viewLine.showTranslation">
+        {{viewLine.bookLine.sourceLine}} 
       </div>
 
-      <div *ngIf="line.showTranslation">
-        {{i}}
+      <div *ngIf="viewLine.showTranslation">
 
-        <div *ngIf="line.translation.length==0">
-          {{ line.sourceTxt }}
+        <div *ngIf="viewLine.bookLine.sentences.length==0">
+          {{viewLine.bookLine.sourceLine}}
         </div>
 
-        <div *ngFor="let s of line.translation">
-          {{s.sentenceSource}}
-          <hr>
-          <small>{{s.sentenceDest}}</small>
-          <br>
-          <br>
+        <div *ngIf="viewLine.bookLine.sentences.length!=0">
+
+          <div *ngFor="let s of viewLine.bookLine.sentences">
+            {{s.sentenceSource}}
+            <hr>
+            <small>{{s.sentenceDest}}</small>
+            <br>
+            <br>
+          </div>
         </div>
+
+
       </div>
+
 
     </button>
   </ion-list>
