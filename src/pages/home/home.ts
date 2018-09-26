@@ -50,7 +50,6 @@ export class HomePage {
   }
 
   loadAndViewBook(data) {
-
     this.bookTranslatorService.getBook(data)
       .then(book => {
         this.viewLines = [];
@@ -69,7 +68,6 @@ export class HomePage {
 
         this.storage.set('lastRead', this.book.storeKey);
       })
-
   }
 
   openBookSelector() {

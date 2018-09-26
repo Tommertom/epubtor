@@ -1,11 +1,35 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      About
+      Quiz
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-SAHFAKJHDSD
+
+  <h1>{{question}}</h1>
+  <hr>
+  <button *ngFor="let answer of answers" ion-button full (click)="answerSelected(answer)">{{answer.text}}</button>
+  <hr>
+
+  <button ion-button full (click)="nextQuestion()">Next Question</button>
+  <br>
+  <button ion-button full (click)="swapMode()">{{mode}}</button>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <div *ngFor="let word of wrongwords">{{word}} - </div>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <button ion-button full (click)="nextQuestion()">Restart already done</button>
+  <button ion-button full (click)="startRandom()">Start random</button>
 </ion-content>

@@ -1,0 +1,6 @@
+-Dictionairy
+https://raw.githubusercontent.com/mananoreboton/en-es-en-Dic/master/src/main/resources/dic/es-en.xml
+
+
+- Verbs and conjugations
+https://github.com/ghidinelli/fred-jehle-spanish-verbs

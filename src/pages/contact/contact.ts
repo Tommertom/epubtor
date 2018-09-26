@@ -45,13 +45,15 @@ export class ContactPage {
   }
 
   displayItem(item) {
-    console.log('TAT', this.verbTree[item])
+   // console.log('TAT', this.verbTree[item])
     this.conjugation = JSON.stringify(this.verbTree[item], null, 2);
     this.items = [item];
+    let b = document.getElementById('search');
+    if (b) b.scrollIntoView({ behavior: "instant" });
   }
 
   loadVerbs() {
-    this.http.get('assets/txtbooks/jehle_verb_database.csv', { responseType: 'text' })
+    this.http.get('assets/dict/jehle_verb_database.csv', { responseType: 'text' })
       .subscribe((data) => {
         let loadedLines = data.split("\n");
         let verbList = [];
@@ -93,7 +95,7 @@ export class ContactPage {
           }
         })
 
-        // console.log('VERBTREE', this.verbTree);
+        console.log('VERBTREE', this.verbTree);
         this.items = Object.keys(this.verbTree);
         //this.verbList = Object.keys(verbTree);
       })

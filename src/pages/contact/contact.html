@@ -3,7 +3,7 @@
 
 
 
-  <ion-searchbar (ionInput)="getItems($event)" showCancelButton="true" (ionCancel)="onCancel($event)"></ion-searchbar>
+  <ion-searchbar id="search"  (ionInput)="getItems($event)" showCancelButton="true" (ionCancel)="onCancel($event)"></ion-searchbar>
   <ion-list>
     <ion-item *ngFor="let item of items" (click)="displayItem(item)">
       {{ item }}
