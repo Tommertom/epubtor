@@ -17,19 +17,8 @@
   <br>
   <button ion-button full (click)="swapMode()">{{mode}}</button>
   <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
+    <hr>
+ <span (click)="cleanWrong()"> Wrong words</span><br>
   <div *ngFor="let word of wrongwords">{{word}} - </div>
   <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <button ion-button full (click)="nextQuestion()">Restart already done</button>
-  <button ion-button full (click)="startRandom()">Start random</button>
 </ion-content>

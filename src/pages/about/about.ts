@@ -1,7 +1,7 @@
 import { Storage } from '@ionic/storage';
 import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { NavController } from 'ionic-angular';
+import { NavController, AlertController } from 'ionic-angular';
 
 @Component({
   selector: 'page-about',
@@ -19,7 +19,7 @@ export class AboutPage {
   words: Array<string> = [];
   wrongwords: Array<string> = [];
 
-  constructor(private storage: Storage, public navCtrl: NavController, private http: HttpClient) {
+  constructor(private alerCtrl: AlertController, private storage: Storage, public navCtrl: NavController, private http: HttpClient) {
     this.loadVerbs();
 
     this.storage.get('configQuiz')
@@ -39,7 +39,7 @@ export class AboutPage {
     else {
       this.wrongwords.push(this.word);
       answer.text = '! ' + answer.text;
-     // console.log('WRONGWORDS', this.wrongwords)
+      // console.log('WRONGWORDS', this.wrongwords)
     }
 
     this.storage.set('configQuiz', {
@@ -57,7 +57,7 @@ export class AboutPage {
     this.history['mode'].push(this.word);
 
 
-   // console.log('SADSAD', this.question, this.answers, this.word, this.mode)
+    // console.log('SADSAD', this.question, this.answers, this.word, this.mode)
     // lets find a new word
     let item = Math.floor(Math.random() * this.maxwordcount);
     this.word = this.words[item];
@@ -82,7 +82,7 @@ export class AboutPage {
     }
     else {
       this.question = this.verbTree[this.word]['translation']
-      this.answers[aposition] = this.word;
+      this.answers[aposition] = { text: this.word };
 
       // fill the rest of the answers with descriptions
       for (let i = 0; i < this.answers.length; i++) {
@@ -92,9 +92,36 @@ export class AboutPage {
       }
     }
 
-    // console.log('Question nd stuff', this.answers, this.word, this.question, this.verbTree[this.word]['translation']);
+    //console.log('Question nd stuff', this.answers, this.word, this.question, this.verbTree[this.word]['translation']);
   }
 
+
+  cleanWrong() {
+
+
+    let confirm = this.alerCtrl.create({
+      title: 'Remove wrong words?',
+      message: 'Do you agree to?',
+      buttons: [
+        {
+          text: 'Disagree',
+          handler: () => {
+            //console.log('Disagree clicked');
+          }
+        },
+        {
+          text: 'Agree',
+          handler: () => {
+            //console.log('Agree clicked');
+            this.wrongwords = [];
+          }
+        }
+      ]
+    });
+    confirm.present()
+
+
+  }
   swapMode() {
     if (this.mode == 'ES-EN') this.mode = 'EN-ES'
     else this.mode = 'ES-EN'
