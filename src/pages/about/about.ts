@@ -10,9 +10,9 @@ import { NavController, AlertController } from 'ionic-angular';
 export class AboutPage {
 
   verbTree = {};
-  question: string = "";
+  question: string = ".";
   word: string = "";
-  answers: Array<Object> = [{ text: 'HI' }, { text: 'HI2' }, { text: 'HI' }, { text: 'HI2' }];
+  answers: Array<Object> = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }];
   mode: string = "ES-EN";
   history: Object = {};
   maxwordcount: number = 0;
@@ -34,10 +34,15 @@ export class AboutPage {
   }
 
   answerSelected(answer) {
-    if (this.verbTree[this.word]['translation'] == answer.text)
+
+  //  console.log('Answer selected', answer, this.word, this.verbTree[this.word]['translation'])
+
+    if (this.word == answer.word)
       this.nextQuestion()
     else {
+      this.wrongwords.push(answer.word);
       this.wrongwords.push(this.word);
+      
       answer.text = '! ' + answer.text;
       // console.log('WRONGWORDS', this.wrongwords)
     }
@@ -65,40 +70,39 @@ export class AboutPage {
     // empty the answers
     for (let i = 0; i < this.answers.length; i++) {
       this.answers[i]['text'] == '';
+      this.answers[i]['word'] == '';
+
     }
 
     // and lets fill it
     let aposition = Math.floor(Math.random() * 4);
     if (this.mode == 'ES-EN') {
       this.question = this.word;
-      this.answers[aposition] = { text: this.verbTree[this.word]['translation'] }
+      this.answers[aposition] = { text: this.verbTree[this.word]['translation'], word: this.word }
 
       // fill the rest of the answers with descriptions
       for (let i = 0; i < this.answers.length; i++) {
         let randomitem = Math.floor(Math.random() * this.maxwordcount);
         let randomword = this.words[randomitem];
-        if (i != aposition) this.answers[i] = { text: this.verbTree[randomword]['translation'] }; //
+        if (i != aposition) this.answers[i] = { text: this.verbTree[randomword]['translation'], word: randomword }; //
       }
     }
     else {
       this.question = this.verbTree[this.word]['translation']
-      this.answers[aposition] = { text: this.word };
+      this.answers[aposition] = { text: this.word, word: this.word };
 
       // fill the rest of the answers with descriptions
       for (let i = 0; i < this.answers.length; i++) {
         let randomitem = Math.floor(Math.random() * this.maxwordcount);
         let randomword = this.words[randomitem];
-        if (i != aposition) this.answers[i] = { text: randomword }; //
+        if (i != aposition) this.answers[i] = { text: randomword, word: randomword }; //
       }
     }
-
     //console.log('Question nd stuff', this.answers, this.word, this.question, this.verbTree[this.word]['translation']);
   }
 
 
   cleanWrong() {
-
-
     let confirm = this.alerCtrl.create({
       title: 'Remove wrong words?',
       message: 'Do you agree to?',
@@ -174,6 +178,7 @@ export class AboutPage {
         // console.log('VERBTREE', this.verbTree);
         this.words = Object.keys(this.verbTree);
         this.maxwordcount = this.words.length;
+        this.nextQuestion();
         //this.verbList = Object.keys(verbTree);
       })
   }
