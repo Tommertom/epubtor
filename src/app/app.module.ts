@@ -27,7 +27,7 @@ import { BookTranslator } from '../providers/booktranslater.provider';
   imports: [
     IonicStorageModule.forRoot({
       name: '__mydb',
-      driverOrder: ['indexeddb', 'sqlite', 'websql']
+      driverOrder: [ 'sqlite', 'indexeddb','websql']
     }),
     HttpClientModule,
     BrowserModule,
