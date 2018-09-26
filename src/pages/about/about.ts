@@ -22,7 +22,7 @@ export class AboutPage {
 
   constructor(private alerCtrl: AlertController, private storage: Storage, public navCtrl: NavController, private http: HttpClient) {
     this.loadVerbs();
-    this.loadOthers();
+    //this.loadOthers();
 
     this.storage.get('configQuiz')
       .then(val => {
@@ -137,7 +137,8 @@ export class AboutPage {
       .subscribe((data) => {
         console.log('SEE DATA', data['dic']['l']);
 
-        let excludedt = ['{prop}', '{v}', '{prep}', '{suffix}', '{prefix}'];
+        let excludedt = ['{prop}', '{v}', '{suffix}', '{prefix}'];
+        let includet = ['{f}', '{m}'];
 
         let words = {};
         let sets = data['dic']['l'];
@@ -146,14 +147,19 @@ export class AboutPage {
           let wordsinset = set['w'];
           // console.log(' words in set', wordsinset)
           wordsinset.map(word => {
-            if (excludedt.indexOf(word.t) < 0) {
+            // if (excludedt.indexOf(word.t) < 0) {
+            if (includet.indexOf(word.t) > -1) {
               count += 1;
-              words[word.c] = { translation: word.d, type: word.t }
+
+              if (Math.floor(Math.random() * 10) > 4)
+                this.verbTree[word.c] = { translation: word.d, type: word.t }
             }
           })
         })
 
-        console.log('WORDSSSS', words, count)
+        console.log('WORDSSSS', this.verbTree, count)
+
+        this.loadVerbs();
       })
   }
 
@@ -200,9 +206,10 @@ export class AboutPage {
           }
         })
 
-        // console.log('VERBTREE', this.verbTree);
+
         this.words = Object.keys(this.verbTree);
         this.maxwordcount = this.words.length;
+        console.log('VERBTREE', this.verbTree, this.maxwordcount);
         this.nextQuestion();
         //this.verbList = Object.keys(verbTree);
       })

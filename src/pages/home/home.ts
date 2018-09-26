@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, AlertController } from 'ionic-angular';
 
-import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
-import { BookTranslator, BookLine, Book, TranslationSentences } from '../../providers/booktranslater.provider';
+import { BookTranslator,  Book } from '../../providers/booktranslater.provider';
 
 @Component({
   selector: 'page-home',
@@ -18,7 +17,7 @@ export class HomePage {
   constructor(
     private bookTranslatorService: BookTranslator,
     private storage: Storage, public navCtrl: NavController,
-    private http: HttpClient, public alerCtrl: AlertController) { }
+    public alerCtrl: AlertController) { }
 
   ionViewDidEnter() {
 
@@ -110,7 +109,7 @@ export class HomePage {
     if (this.lastScrollLine < this.book.booklines.length)
       while (numberToLoad > 0) {
         if (this.lastScrollLine < this.book.booklines.length) {
-          let lineSource = this.viewLines[this.lastScrollLine];
+       //   let lineSource = this.viewLines[this.lastScrollLine];
 
           this.viewLines.push({
             bookLine: this.book.booklines[this.lastScrollLine],

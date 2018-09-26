@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 
-import { tap, filter, map } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 
 /*
 {
