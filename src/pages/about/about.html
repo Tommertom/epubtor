@@ -17,8 +17,10 @@
   <br>
   <button ion-button full (click)="swapMode()">{{mode}}</button>
   <br>
-    <hr>
- <span (click)="cleanWrong()"> Wrong words</span><br>
+
+  <hr>
+  <span (click)="cleanWrong()"> Wrong words</span>
+  <br>
   <div *ngFor="let word of wrongwords">{{word}} - </div>
   <br>
 </ion-content>

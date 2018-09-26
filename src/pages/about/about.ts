@@ -10,6 +10,7 @@ import { NavController, AlertController } from 'ionic-angular';
 export class AboutPage {
 
   verbTree = {};
+  otherTree = {};
   question: string = ".";
   word: string = "";
   answers: Array<Object> = [{ text: '' }, { text: '' }, { text: '' }, { text: '' }];
@@ -21,6 +22,7 @@ export class AboutPage {
 
   constructor(private alerCtrl: AlertController, private storage: Storage, public navCtrl: NavController, private http: HttpClient) {
     this.loadVerbs();
+    this.loadOthers();
 
     this.storage.get('configQuiz')
       .then(val => {
@@ -35,14 +37,14 @@ export class AboutPage {
 
   answerSelected(answer) {
 
-  //  console.log('Answer selected', answer, this.word, this.verbTree[this.word]['translation'])
+    //  console.log('Answer selected', answer, this.word, this.verbTree[this.word]['translation'])
 
     if (this.word == answer.word)
       this.nextQuestion()
     else {
       this.wrongwords.push(answer.word);
       this.wrongwords.push(this.word);
-      
+
       answer.text = '! ' + answer.text;
       // console.log('WRONGWORDS', this.wrongwords)
     }
@@ -61,7 +63,6 @@ export class AboutPage {
       this.history['mode'] = [];
     this.history['mode'].push(this.word);
 
-
     // console.log('SADSAD', this.question, this.answers, this.word, this.mode)
     // lets find a new word
     let item = Math.floor(Math.random() * this.maxwordcount);
@@ -71,7 +72,6 @@ export class AboutPage {
     for (let i = 0; i < this.answers.length; i++) {
       this.answers[i]['text'] == '';
       this.answers[i]['word'] == '';
-
     }
 
     // and lets fill it
@@ -130,6 +130,31 @@ export class AboutPage {
     if (this.mode == 'ES-EN') this.mode = 'EN-ES'
     else this.mode = 'ES-EN'
     this.nextQuestion();
+  }
+
+  loadOthers() {
+    this.http.get('assets/dict/spanishdict.json')
+      .subscribe((data) => {
+        console.log('SEE DATA', data['dic']['l']);
+
+        let excludedt = ['{prop}', '{v}', '{prep}', '{suffix}', '{prefix}'];
+
+        let words = {};
+        let sets = data['dic']['l'];
+        let count = 0;
+        sets.map(set => {
+          let wordsinset = set['w'];
+          // console.log(' words in set', wordsinset)
+          wordsinset.map(word => {
+            if (excludedt.indexOf(word.t) < 0) {
+              count += 1;
+              words[word.c] = { translation: word.d, type: word.t }
+            }
+          })
+        })
+
+        console.log('WORDSSSS', words, count)
+      })
   }
 
   loadVerbs() {
