@@ -10,7 +10,7 @@
 
   <h1>{{question}}</h1>
   <hr>
-  <button *ngFor="let answer of answers" ion-button full (click)="answerSelected(answer)">{{answer.text}}</button>
+  <button *ngFor="let answer of answers" ion-button  text-wrap full (click)="answerSelected(answer)">{{answer.text}}</button>
   <hr>
 
   <button ion-button full (click)="nextQuestion()">Next Question</button>
@@ -22,5 +22,10 @@
   <span (click)="cleanWrong()"> Wrong words</span>
   <br>
   <div *ngFor="let word of wrongwords">{{word}} - </div>
+  <br>
+  <hr>
+  <span>Good words</span>
+  <br>
+  <div *ngFor="let word of goodwords">{{word}} - </div>
   <br>
 </ion-content>

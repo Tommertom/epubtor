@@ -19,6 +19,7 @@ export class AboutPage {
   maxwordcount: number = 0;
   words: Array<string> = [];
   wrongwords: Array<string> = [];
+  goodwords: Array<string> = [];
 
   constructor(private alerCtrl: AlertController, private storage: Storage, public navCtrl: NavController, private http: HttpClient) {
     this.loadVerbs();
@@ -27,9 +28,14 @@ export class AboutPage {
     this.storage.get('configQuiz')
       .then(val => {
         if (val) {
+
+          
           this.mode = val.mode;
           this.history = val.history;
           this.wrongwords = val.wrongwords;
+
+          if (val.goodwords) this.goodwords = val.goodwords;
+          
         }
         //this.nextQuestion();
       })
@@ -39,20 +45,23 @@ export class AboutPage {
 
     //  console.log('Answer selected', answer, this.word, this.verbTree[this.word]['translation'])
 
-    if (this.word == answer.word)
+    if (this.word == answer.word) {
+      this.goodwords.push(answer.word+' '+ this.verbTree[answer.word]['translation'])
       this.nextQuestion()
+    }
     else {
       this.wrongwords.push(answer.word);
       this.wrongwords.push(this.word);
 
-      answer.text = '! ' + answer.text;
+      answer.text = '! ' + answer.word + ' -> ' + this.verbTree[answer.word]['translation']
       // console.log('WRONGWORDS', this.wrongwords)
     }
 
     this.storage.set('configQuiz', {
       mode: this.mode,
       history: this.history,
-      wrongwords: this.wrongwords
+      wrongwords: this.wrongwords,
+      goodwords:this.goodwords
     })
   }
 
@@ -137,10 +146,10 @@ export class AboutPage {
       .subscribe((data) => {
         console.log('SEE DATA', data['dic']['l']);
 
-        let excludedt = ['{prop}', '{v}', '{suffix}', '{prefix}'];
+       // let excludedt = ['{prop}', '{v}', '{suffix}', '{prefix}'];
         let includet = ['{f}', '{m}'];
 
-        let words = {};
+        //let words = {};
         let sets = data['dic']['l'];
         let count = 0;
         sets.map(set => {

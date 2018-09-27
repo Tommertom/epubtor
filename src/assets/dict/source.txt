@@ -4,3 +4,5 @@ https://raw.githubusercontent.com/mananoreboton/en-es-en-Dic/master/src/main/res
 
 - Verbs and conjugations
 https://github.com/ghidinelli/fred-jehle-spanish-verbs
+
+Spanish-English FreeDict Dictionary
