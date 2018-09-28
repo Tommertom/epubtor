@@ -50,8 +50,8 @@ export class AboutPage {
       this.nextQuestion()
     }
     else {
-      this.wrongwords.push(answer.word);
-      this.wrongwords.push(this.word);
+      this.wrongwords.push(answer.word+' '+ this.verbTree[answer.word]['translation']);
+      this.wrongwords.push(this.word+' '+ this.verbTree[this.word]['translation']);
 
       answer.text = '! ' + answer.word + ' -> ' + this.verbTree[answer.word]['translation']
       // console.log('WRONGWORDS', this.wrongwords)
