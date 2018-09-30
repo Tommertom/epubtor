@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, AlertController } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
-import { BookTranslator,  Book } from '../../providers/booktranslater.provider';
+import { BookTranslator, Book } from '../../providers/booktranslater.provider';
 
 @Component({
   selector: 'page-home',
@@ -23,12 +23,12 @@ export class HomePage {
 
     // lets load the preloaded onces
     let preloaded = [
-     // { key: 'book-altamirano', url: 'assets/txtbooks/ignacio-manuel-altamirano-la-navidad-en-las-monta-as.txt' },
-     // { key: 'book-la_hucha', url: 'assets/txtbooks/la_hucha.txt' },
-    //  { key: 'book-la_piedra_filosofal', url: 'assets/txtbooks/la_piedra_filosofal.txt' },
-    { key: 'book-montypython', url: 'assets/txtbooks/Monty.Python.And.The.Holy.Grail.1975.srt' },
-    { key: 'book-hobbitsrt', url: 'assets/txtbooks/the-hobbit-an-unexpected-journey-yify-spanish.srt' }, 
-    { key: 'book-pinochio', url: 'assets/txtbooks/las_aventuras_de_pinocho.txt' },
+      // { key: 'book-altamirano', url: 'assets/txtbooks/ignacio-manuel-altamirano-la-navidad-en-las-monta-as.txt' },
+      // { key: 'book-la_hucha', url: 'assets/txtbooks/la_hucha.txt' },
+      //  { key: 'book-la_piedra_filosofal', url: 'assets/txtbooks/la_piedra_filosofal.txt' },
+      { key: 'book-montypython', url: 'assets/txtbooks/Monty.Python.And.The.Holy.Grail.1975.srt' },
+      { key: 'book-hobbitsrt', url: 'assets/txtbooks/the-hobbit-an-unexpected-journey-yify-spanish.srt' },
+      { key: 'book-pinochio', url: 'assets/txtbooks/las_aventuras_de_pinocho.txt' },
       { key: 'book-thehobbit', url: 'assets/txtbooks/El Hobbit - J  R  R  Tolkien.txt' }
     ]
     let booklist;
@@ -61,16 +61,18 @@ export class HomePage {
         this.book = book;
         this.loadNextLines();
 
-        this.storage.get('lastClicked' + this.book.title)
-          .then(val => {
-            if (val)
-              setTimeout(() => {
-                let b = document.getElementById(val);
-                if (b) b.scrollIntoView({ behavior: "instant" })
-              }, 500);
-          })
+        if (this.book)
+          this.storage.get('lastClicked' + this.book.title)
+            .then(val => {
+              if (val)
+                setTimeout(() => {
+                  let b = document.getElementById(val);
+                  if (b) b.scrollIntoView({ behavior: "instant" })
+                }, 500);
+            })
 
-        this.storage.set('lastRead', this.book.storeKey);
+        if (this.book)
+          this.storage.set('lastRead', this.book.storeKey);
       })
   }
 
@@ -95,6 +97,16 @@ export class HomePage {
 
         alert.addButton('Cancel');
         alert.addButton({
+          text: 'Delete',
+          handler: data => {
+            //console.log('Radio data:', data);
+            //if (data)
+            // this.loadAndViewBook(data);
+            this.bookTranslatorService.deleteBooks();
+
+          }
+        });
+        alert.addButton({
           text: 'Ok',
           handler: data => {
             //console.log('Radio data:', data);
@@ -111,21 +123,22 @@ export class HomePage {
   loadNextLines() {
     let numberToLoad = 550;
 
-    if (this.lastScrollLine < this.book.booklines.length)
-      while (numberToLoad > 0) {
-        if (this.lastScrollLine < this.book.booklines.length) {
-       //   let lineSource = this.viewLines[this.lastScrollLine];
+    if (this.book)
+      if (this.lastScrollLine < this.book.booklines.length)
+        while (numberToLoad > 0) {
+          if (this.lastScrollLine < this.book.booklines.length) {
+            //   let lineSource = this.viewLines[this.lastScrollLine];
 
-          this.viewLines.push({
-            bookLine: this.book.booklines[this.lastScrollLine],
-            showTranslation: false
-          });
+            this.viewLines.push({
+              bookLine: this.book.booklines[this.lastScrollLine],
+              showTranslation: false
+            });
 
+          }
+
+          this.lastScrollLine += 1;
+          numberToLoad -= 1;
         }
-
-        this.lastScrollLine += 1;
-        numberToLoad -= 1;
-      }
   }
 
   doInfinite(infiniteScroll) {

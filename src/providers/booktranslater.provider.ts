@@ -38,8 +38,10 @@ export class BookTranslator {
 
     constructor(private storage: Storage, private http: HttpClient) { }
 
+
     //'assets/txtbooks/las_aventuras_de_pinocho.txt'
     getTxtBookFromURL(url: string, title: string) {
+
         return this.http.get(url, { responseType: 'text' })
             .toPromise()
             .then((data) => {
@@ -47,13 +49,17 @@ export class BookTranslator {
                 let bookLines = [];
                 let linecount = 0;
                 let loadedLines = data.split("\n");
+
+                let pushLine: string = "";
+
                 loadedLines.map(line => {
 
-                    line = line.trim(); 
+                    line = line.trim();
                     let loadLine: boolean = true;
-                    line=line.replace('<i>','')
-                    line=line.replace('</i>','')
-         
+                    line = line.replace('<i>', '')
+                    line = line.replace('</i>', '')
+                    line = line.replace('...', '')
+
                     if (line.length == 0) loadLine = false;
                     let isnum = /^\d+$/.test(line);
                     if (isnum) loadLine = false;
@@ -62,15 +68,31 @@ export class BookTranslator {
 
 
                     if (loadLine) {
-                        bookLines.push({
-                            sourceLine: line,
-                            destLine: "",
-                            sentences: [],
-                            index: linecount
-                        });
-                        linecount += 1;
+
+                        pushLine += line + ' ';
+
+                        if (pushLine.length > 1000) {
+                            bookLines.push({
+                                sourceLine: pushLine,
+                                destLine: "",
+                                sentences: [],
+                                index: linecount
+                            });
+                            linecount += 1;
+                            pushLine = "";
+                        }
                     }
                 })
+
+                //                linecount += 1;
+                bookLines.push({
+                    sourceLine: pushLine,
+                    destLine: "",
+                    sentences: [],
+                    index: linecount
+                });
+                pushLine = "";
+
 
                 let storeKey = 'book-' + title;
                 let book = {
@@ -105,6 +127,18 @@ export class BookTranslator {
     getBook<Book>(bookKey: string) {
         return this.storage.ready()
             .then(() => { return this.storage.get(bookKey) })
+    }
+    
+  
+    deleteBooks() {
+        this.getBooklist()
+            .then(books => {
+                books.map(bookKey => {
+                    this.storage.remove(bookKey);
+                    console.log('Deleteing', bookKey)
+                })
+                this.storage.set('booklist', [])
+            })
     }
 
     getTranslation(book: Book, index: number) {
