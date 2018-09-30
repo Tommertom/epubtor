@@ -48,7 +48,20 @@ export class BookTranslator {
                 let linecount = 0;
                 let loadedLines = data.split("\n");
                 loadedLines.map(line => {
-                    if (line.length > 1) {
+
+                    line = line.trim(); 
+                    let loadLine: boolean = true;
+                    line=line.replace('<i>','')
+                    line=line.replace('</i>','')
+         
+                    if (line.length == 0) loadLine = false;
+                    let isnum = /^\d+$/.test(line);
+                    if (isnum) loadLine = false;
+
+                    if (line.includes('-->')) loadLine = false;
+
+
+                    if (loadLine) {
                         bookLines.push({
                             sourceLine: line,
                             destLine: "",

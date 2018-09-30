@@ -23,10 +23,12 @@ export class HomePage {
 
     // lets load the preloaded onces
     let preloaded = [
-      { key: 'book-altamirano', url: 'assets/txtbooks/ignacio-manuel-altamirano-la-navidad-en-las-monta-as.txt' },
-      { key: 'book-la_hucha', url: 'assets/txtbooks/la_hucha.txt' },
-      { key: 'book-la_piedra_filosofal', url: 'assets/txtbooks/la_piedra_filosofal.txt' },
-      { key: 'book-pinochio', url: 'assets/txtbooks/las_aventuras_de_pinocho.txt' },
+     // { key: 'book-altamirano', url: 'assets/txtbooks/ignacio-manuel-altamirano-la-navidad-en-las-monta-as.txt' },
+     // { key: 'book-la_hucha', url: 'assets/txtbooks/la_hucha.txt' },
+    //  { key: 'book-la_piedra_filosofal', url: 'assets/txtbooks/la_piedra_filosofal.txt' },
+    { key: 'book-montypython', url: 'assets/txtbooks/Monty.Python.And.The.Holy.Grail.1975.srt' },
+    { key: 'book-hobbitsrt', url: 'assets/txtbooks/the-hobbit-an-unexpected-journey-yify-spanish.srt' }, 
+    { key: 'book-pinochio', url: 'assets/txtbooks/las_aventuras_de_pinocho.txt' },
       { key: 'book-thehobbit', url: 'assets/txtbooks/El Hobbit - J  R  R  Tolkien.txt' }
     ]
     let booklist;
