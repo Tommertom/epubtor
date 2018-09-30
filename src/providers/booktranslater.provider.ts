@@ -2,7 +2,7 @@ import { Book } from './booktranslater.provider';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
-
+import { Events } from 'ionic-angular';
 import { tap, map } from 'rxjs/operators';
 
 /*
@@ -36,7 +36,7 @@ export class BookTranslator {
 
     booklist: Array<string> = [];
 
-    constructor(private storage: Storage, private http: HttpClient) { }
+    constructor(private storage: Storage, private http: HttpClient, public events: Events) { }
 
 
     //'assets/txtbooks/las_aventuras_de_pinocho.txt'
@@ -128,8 +128,8 @@ export class BookTranslator {
         return this.storage.ready()
             .then(() => { return this.storage.get(bookKey) })
     }
-    
-  
+
+
     deleteBooks() {
         this.getBooklist()
             .then(books => {
@@ -195,29 +195,37 @@ export class BookTranslator {
                     };
                 }))
     }
+
+    translateBook(book: Book, index: number) {
+
+        console.log('calling trsn', index);
+
+        if (index == book.booklines.length) return Promise.resolve(true)
+        else {
+            if (book.booklines[index].destLine != "") return this.translateBook(book, index + 1)
+            else {
+                return this.getGoogleTranslation('es', 'en', book.booklines[index].sourceLine)
+                    .toPromise()
+                    .then(val => {
+                        book.booklines[index].destLine = val.destLine;
+                        book.booklines[index].sentences = val.sentences;
+                       // console.log('Value received ', val, book.booklines[index]);
+
+                        this.events.publish('translation:gotten', { index: index })
+
+                        setTimeout(() => {
+                            return this.translateBook(book, index + 1);
+                        }, 3000 + Math.floor(Math.random() * 10000))
+                    })
+                    .catch(err => {
+                        console.log('ERR: GOOGLE', err)
+                    })
+
+            }
+        }
+    }
+
+
 }
-    /*
 
 
-    GOOGLE DOES NOT LIKE THIS
-       translateBook(book: Book, index: number) {
-   
-           console.log('calling trsn', index);
-   
-           if (index == book.booklines.length) return Promise.resolve(true)
-           else {
-               if (book.booklines[index].destLine != "") return this.translateBook(book, index + 1)
-               else {
-                   return this.getGoogleTranslation('es', 'en', book.booklines[index].sourceLine)
-                       .toPromise()
-                       .then(val => {
-                           book.booklines[index].destLine = val.destLine;
-                           book.booklines[index].sentences = val.sentences;
-                           console.log('Value received ', val, book.booklines[index]);
-                           return this.translateBook(book, index + 1);
-                       })
-   
-               }
-           }
-       }
-   */

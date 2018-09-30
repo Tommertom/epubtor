@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, AlertController } from 'ionic-angular';
+import { Events, NavController, AlertController, ActionSheetController } from 'ionic-angular';
 
 import { Storage } from '@ionic/storage';
 import { BookTranslator, Book } from '../../providers/booktranslater.provider';
@@ -13,11 +13,20 @@ export class HomePage {
   viewLines: Array<Object> = [];
   book: Book;
   lastScrollLine = 0;
+  transCount = 0;
 
   constructor(
+    public events: Events,
     private bookTranslatorService: BookTranslator,
+    private actionsheetCtrl: ActionSheetController,
     private storage: Storage, public navCtrl: NavController,
-    public alerCtrl: AlertController) { }
+    public alerCtrl: AlertController) {
+    events.subscribe('translation:gotten', ((index) => {
+      console.log(' deded',index)
+      // user and time are the same arguments passed in `events.publish(user, time)`
+      this.transCount = index['index'];
+    }))
+  }
 
   ionViewDidEnter() {
 
@@ -26,7 +35,9 @@ export class HomePage {
       // { key: 'book-altamirano', url: 'assets/txtbooks/ignacio-manuel-altamirano-la-navidad-en-las-monta-as.txt' },
       // { key: 'book-la_hucha', url: 'assets/txtbooks/la_hucha.txt' },
       //  { key: 'book-la_piedra_filosofal', url: 'assets/txtbooks/la_piedra_filosofal.txt' },
-      { key: 'book-montypython', url: 'assets/txtbooks/Monty.Python.And.The.Holy.Grail.1975.srt' },
+      { key: 'book-thebigshort', url: 'assets/txtbooks/The Big Short 2015.srt' },
+      //   { key: 'book-nottinghill', url: 'assets/txtbooks/Notting Hill.srt' },
+      //  { key: 'book-montypython', url: 'assets/txtbooks/Monty.Python.And.The.Holy.Grail.1975.srt' },
       { key: 'book-hobbitsrt', url: 'assets/txtbooks/the-hobbit-an-unexpected-journey-yify-spanish.srt' },
       { key: 'book-pinochio', url: 'assets/txtbooks/las_aventuras_de_pinocho.txt' },
       { key: 'book-thehobbit', url: 'assets/txtbooks/El Hobbit - J  R  R  Tolkien.txt' }
@@ -59,7 +70,10 @@ export class HomePage {
         this.viewLines = [];
         this.lastScrollLine = 0;
         this.book = book;
+        this.transCount = 0;
         this.loadNextLines();
+
+        console.log('Loaded book', this.book)
 
         if (this.book)
           this.storage.get('lastClicked' + this.book.title)
@@ -96,16 +110,7 @@ export class HomePage {
         }
 
         alert.addButton('Cancel');
-        alert.addButton({
-          text: 'Delete',
-          handler: data => {
-            //console.log('Radio data:', data);
-            //if (data)
-            // this.loadAndViewBook(data);
-            this.bookTranslatorService.deleteBooks();
 
-          }
-        });
         alert.addButton({
           text: 'Ok',
           handler: data => {
@@ -119,6 +124,48 @@ export class HomePage {
       })
   }
 
+
+  openBookActions() {
+    let actionSheet = this.actionsheetCtrl.create({
+      title: 'Book actions',
+      // cssClass: 'action-sheets-basic-page',
+      buttons: [
+        {
+          text: 'Open loaded books',
+          //  role: 'destructive',
+          //  icon: !this.platform.is('ios') ? 'trash' : null,
+          handler: () => {
+            this.openBookSelector();
+          }
+        },
+        {
+          text: 'Translate this book fully',
+          //  icon: !this.platform.is('ios') ? 'share' : null,
+          handler: () => {
+            this.bookTranslatorService.translateBook(this.book, 0);
+            // console.log('Share clicked');
+          }
+        },
+        {
+          text: 'Delete all loaded books',
+          //  role: 'destructive',
+          //  icon: !this.platform.is('ios') ? 'trash' : null,
+          handler: () => {
+            this.bookTranslatorService.deleteBooks();
+          }
+        },
+        {
+          text: 'Cancel',
+          role: 'cancel', // will always sort to be on the bottom
+          //  icon: 'close',
+          handler: () => {
+            console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    actionSheet.present();
+  }
 
   loadNextLines() {
     let numberToLoad = 550;
