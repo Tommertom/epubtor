@@ -38,7 +38,7 @@ export class HomePage {
     this.addDebug(this.storage.driver);
     this.storage.keys().then(val => {
       console.log('keys ', val)
-   //   this.addDebug(val)
+      //   this.addDebug(val)
     })
 
     this.storage.forEach((value, key, num) => {
@@ -89,7 +89,17 @@ export class HomePage {
         this.transCount = 0;
         this.loadNextLines();
 
-        console.log('Loaded book', this.book)
+        
+        let lc = 0;
+        let tc = 0;
+        this.book.booklines.map(line => {
+          if (line.destLine.length > 0) tc += 1;
+          lc += 1;
+        })
+
+        this.addDebug({ tc: tc, lc: lc })
+        console.log('Loaded book', this.book,tc,lc)
+
 
         if (this.book)
           this.storage.get('lastClicked' + this.book.title)
