@@ -14,6 +14,7 @@ export class HomePage {
   book: Book;
   lastScrollLine = 0;
   transCount = 0;
+  debug: string = "";
 
   constructor(
     public events: Events,
@@ -22,13 +23,27 @@ export class HomePage {
     private storage: Storage, public navCtrl: NavController,
     public alerCtrl: AlertController) {
     events.subscribe('translation:gotten', ((index) => {
-      console.log(' deded',index)
+      console.log(' deded', index)
       // user and time are the same arguments passed in `events.publish(user, time)`
       this.transCount = index['index'];
     }))
   }
 
+  addDebug(msg) {
+    this.debug = this.debug + ' | ' + JSON.stringify(msg, null, 2)
+  }
+
   ionViewDidEnter() {
+
+    this.addDebug(this.storage.driver);
+    this.storage.keys().then(val => {
+      console.log('keys ', val)
+   //   this.addDebug(val)
+    })
+
+    this.storage.forEach((value, key, num) => {
+      this.addDebug({ key: key, value: JSON.stringify(value).length, index: num })
+    })
 
     // lets load the preloaded onces
     let preloaded = [
@@ -42,7 +57,7 @@ export class HomePage {
       { key: 'book-pinochio', url: 'assets/txtbooks/las_aventuras_de_pinocho.txt' },
       { key: 'book-universoparalelo', url: 'assets/txtbooks/universoparalelo.txt' },
       { key: 'book-thehobbit', url: 'assets/txtbooks/El Hobbit - J  R  R  Tolkien.txt' }
-    ] 
+    ]
     let booklist;
     this.bookTranslatorService.getBooklist()
       .then(val => {
