@@ -33,9 +33,12 @@ export class HomePage {
     this.debug = this.debug + ' | ' + JSON.stringify(msg, null, 2)
   }
 
-  ionViewDidEnter() {
-    
+  ionViewWillLeave() {
+    if (this.book)
+      this.bookTranslatorService.saveBook(this.book)
+  }
 
+  ionViewDidEnter() {
     this.addDebug(this.storage.driver);
     this.storage.keys().then(val => {
       console.log('keys ', val)
@@ -69,7 +72,7 @@ export class HomePage {
         preloaded.map(bookurl => {
           console.log('checking ', bookurl, bookurl.key.replace('book-', ''))
           if (booklist.indexOf(bookurl.key) < 0) {
-            this.addDebug(' adding '+bookurl.key)
+            this.addDebug(' adding ' + bookurl.key)
             this.bookTranslatorService.getTxtBookFromURL(bookurl.url, bookurl.key.replace('book-', ''))
           }
         })
@@ -91,7 +94,6 @@ export class HomePage {
         this.book = book;
         this.transCount = 0;
         this.loadNextLines();
-
 
         let lc = 0;
         let tc = 0;

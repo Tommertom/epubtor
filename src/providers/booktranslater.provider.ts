@@ -159,16 +159,12 @@ export class BookTranslator {
             res = this.getGoogleTranslation('es', 'en', book.booklines[index].sourceLine)
                 .toPromise()
                 .then(val => {
-
-
                     //console.log('gr  ')
                     book.booklines[index].sourceLine = val.sourceLine;
                     book.booklines[index].destLine = val.destLine;
                     book.booklines[index].sentences = val.sentences;
 
                     //   console.log('Translated and saved', book.booklines[index]);
-
-
                     let lc = 0;
                     let tc = 0;
                     book.booklines.map(line => {
@@ -176,14 +172,14 @@ export class BookTranslator {
                         lc += 1;
                     })
 
-                    this.presentToast('gr ' + val.destLine.substring(0, 100) + ' ' + tc + ':' + lc);
+                    this.presentToast(val.destLine.substring(0, 50) + ' ' + tc + ':' + lc);
                     console.log('translation progress', tc, lc)
-                    this.storage.set(book.storeKey, book)
-                        .then(val => {
+//                    this.storage.set(book.storeKey, book)
+  //                      .then(val => {
                             // this.presentToast('saved ' + val)
 
                             //console.log('saved val', val)
-                        })
+    //                    })
 
                     return Promise.resolve(book.booklines[index]);
                 })
@@ -226,13 +222,17 @@ export class BookTranslator {
                 }))
     }
 
+
+    saveBook(book) {
+        return this.storage.set(book.storeKey, book)
+    }
+
     translateBook(book: Book, index: number) {
 
         console.log('calling trsn', index);
 
         if (index == book.booklines.length) {
-            this.storage.set(book.storeKey, book)
-            this.presentToast('Fully translated') 
+            this.presentToast('Fully translated')
             return Promise.resolve(true)
         }
         else {
