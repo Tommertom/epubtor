@@ -34,6 +34,7 @@ export class HomePage {
   }
 
   ionViewDidEnter() {
+    
 
     this.addDebug(this.storage.driver);
     this.storage.keys().then(val => {
@@ -67,8 +68,10 @@ export class HomePage {
 
         preloaded.map(bookurl => {
           console.log('checking ', bookurl, bookurl.key.replace('book-', ''))
-          if (booklist.indexOf(bookurl.key) < 0)
+          if (booklist.indexOf(bookurl.key) < 0) {
+            this.addDebug(' adding '+bookurl.key)
             this.bookTranslatorService.getTxtBookFromURL(bookurl.url, bookurl.key.replace('book-', ''))
+          }
         })
 
         this.storage.get('lastRead')
@@ -97,7 +100,7 @@ export class HomePage {
             if (line.destLine.length > 0) tc += 1;
             lc += 1;
           })
- 
+
         this.addDebug({ tc: tc, lc: lc })
         console.log('Loaded book', this.book, tc, lc)
 
