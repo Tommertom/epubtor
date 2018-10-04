@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Storage } from '@ionic/storage';
 import { Events } from 'ionic-angular';
 import { tap, map } from 'rxjs/operators';
+import { ToastController } from 'ionic-angular';
 
 /*
 {
@@ -36,8 +37,18 @@ export class BookTranslator {
 
     booklist: Array<string> = [];
 
-    constructor(private storage: Storage, private http: HttpClient, public events: Events) { }
+    constructor(private toastCtrl: ToastController, private storage: Storage, private http: HttpClient, public events: Events) { }
 
+    presentToast(msg) {
+        let toast = this.toastCtrl.create({
+            message: msg,
+            duration: 10000,
+            position: 'top',
+            showCloseButton: true
+        });
+
+        toast.present();
+    }
 
     //'assets/txtbooks/las_aventuras_de_pinocho.txt'
     getTxtBookFromURL(url: string, title: string) {
@@ -142,17 +153,31 @@ export class BookTranslator {
     }
 
     getTranslation(book: Book, index: number) {
+        console.log('gettranslation ', book.booklines[index])
         let res;
         if (book.booklines[index].destLine == "")
             res = this.getGoogleTranslation('es', 'en', book.booklines[index].sourceLine)
                 .toPromise()
                 .then(val => {
+
+
+                    //console.log('gr  ')
                     book.booklines[index].sourceLine = val.sourceLine;
                     book.booklines[index].destLine = val.destLine;
                     book.booklines[index].sentences = val.sentences;
 
                     //   console.log('Translated and saved', book.booklines[index]);
 
+
+                    let lc = 0;
+                    let tc = 0;
+                    book.booklines.map(line => {
+                        if (line.destLine.length > 0) tc += 1;
+                        lc += 1;
+                    })
+
+                    this.presentToast('gr ' + val.destLine.substring(0, 100) + ' ' + tc + ':' + lc);
+                    console.log('translation progress', tc, lc)
                     this.storage.set(book.storeKey, book);
 
                     return Promise.resolve(book.booklines[index]);
@@ -209,7 +234,7 @@ export class BookTranslator {
                     .then(val => {
                         book.booklines[index].destLine = val.destLine;
                         book.booklines[index].sentences = val.sentences;
-                       // console.log('Value received ', val, book.booklines[index]);
+                        // console.log('Value received ', val, book.booklines[index]);
 
                         this.events.publish('translation:gotten', { index: index })
 
