@@ -178,7 +178,12 @@ export class BookTranslator {
 
                     this.presentToast('gr ' + val.destLine.substring(0, 100) + ' ' + tc + ':' + lc);
                     console.log('translation progress', tc, lc)
-                    this.storage.set(book.storeKey, book);
+                    this.storage.set(book.storeKey, book)
+                        .then(val => {
+                            // this.presentToast('saved ' + val)
+
+                            //console.log('saved val', val)
+                        })
 
                     return Promise.resolve(book.booklines[index]);
                 })
@@ -225,7 +230,11 @@ export class BookTranslator {
 
         console.log('calling trsn', index);
 
-        if (index == book.booklines.length) return Promise.resolve(true)
+        if (index == book.booklines.length) {
+            this.storage.set(book.storeKey, book)
+            this.presentToast('Fully translated') 
+            return Promise.resolve(true)
+        }
         else {
             if (book.booklines[index].destLine != "") return this.translateBook(book, index + 1)
             else {

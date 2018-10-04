@@ -89,16 +89,17 @@ export class HomePage {
         this.transCount = 0;
         this.loadNextLines();
 
-        
+
         let lc = 0;
         let tc = 0;
-        this.book.booklines.map(line => {
-          if (line.destLine.length > 0) tc += 1;
-          lc += 1;
-        })
-
+        if (this.book)
+          this.book.booklines.map(line => {
+            if (line.destLine.length > 0) tc += 1;
+            lc += 1;
+          })
+ 
         this.addDebug({ tc: tc, lc: lc })
-        console.log('Loaded book', this.book,tc,lc)
+        console.log('Loaded book', this.book, tc, lc)
 
 
         if (this.book)
