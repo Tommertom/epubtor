@@ -40,8 +40,9 @@ export class HomePage {
       //  { key: 'book-montypython', url: 'assets/txtbooks/Monty.Python.And.The.Holy.Grail.1975.srt' },
       { key: 'book-hobbitsrt', url: 'assets/txtbooks/the-hobbit-an-unexpected-journey-yify-spanish.srt' },
       { key: 'book-pinochio', url: 'assets/txtbooks/las_aventuras_de_pinocho.txt' },
+      { key: 'book-universoparalelo', url: 'assets/txtbooks/universoparalelo.txt' },
       { key: 'book-thehobbit', url: 'assets/txtbooks/El Hobbit - J  R  R  Tolkien.txt' }
-    ]
+    ] 
     let booklist;
     this.bookTranslatorService.getBooklist()
       .then(val => {
