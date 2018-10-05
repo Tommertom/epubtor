@@ -138,12 +138,12 @@ export class AboutPage {
         let includet = ['{f}', '{m}'];
 
         let sets = data['dic']['l'];
-        let count = 0;
+       // let count = 0;
         sets.map(set => {
           let wordsinset = set['w'];
           wordsinset.map(word => {
             if (includet.indexOf(word.t) > -1) {
-              count += 1;
+         //     count += 1;
               // if (Math.floor(Math.random() * 10) > 4)
               this.otherTree[word.c] = { translation: word.d, type: word.t }
             }
@@ -161,7 +161,7 @@ export class AboutPage {
         if (val) {
           console.log('Gotten from store')
           this.verbTree = val;
-          return Promise.resolve(true)
+//          return Promise.resolve(true)
         }
         else return this.http.get('assets/dict/jehle_verb_database.csv', { responseType: 'text' })
           .toPromise()

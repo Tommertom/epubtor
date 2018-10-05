@@ -60,7 +60,7 @@ export class ContactPage {
         if (val) {
           console.log('Gotten from store')
           this.verbTree = val;
-          return Promise.resolve(true)
+         // return Promise.resolve({})
         }
         else return this.http.get('assets/dict/jehle_verb_database.csv', { responseType: 'text' })
           .toPromise()
