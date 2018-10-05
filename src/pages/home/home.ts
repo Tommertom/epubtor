@@ -55,6 +55,12 @@ export class HomePage {
       // { key: 'book-la_hucha', url: 'assets/txtbooks/la_hucha.txt' },
       //  { key: 'book-la_piedra_filosofal', url: 'assets/txtbooks/la_piedra_filosofal.txt' },
       { key: 'book-thebigshort', url: 'assets/txtbooks/The Big Short 2015.srt' },
+      { key: 'book-dune', url: 'assets/txtbooks/Dune - Frank Herbert.txt' },
+      { key: 'book-secuestro', url: 'assets/txtbooks/El Secuestro - John Grisham.txt' },
+      { key: 'book-brujas', url: 'assets/txtbooks/Las Brujas - Roald Dahl.txt' },
+      { key: 'book-mathilda', url: 'assets/txtbooks/Matilda - Roald Dahl.txt' },
+      
+      
       //   { key: 'book-nottinghill', url: 'assets/txtbooks/Notting Hill.srt' },
       //  { key: 'book-montypython', url: 'assets/txtbooks/Monty.Python.And.The.Holy.Grail.1975.srt' },
       { key: 'book-hobbitsrt', url: 'assets/txtbooks/the-hobbit-an-unexpected-journey-yify-spanish.srt' },
