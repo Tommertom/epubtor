@@ -1,7 +1,7 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      {{book?.title}} {{transCount}}
+      {{book?.title}} {{transCount}} ({{book?.translated}}/{{book?.lines}})
     </ion-title>
     <ion-buttons end>
       <button ion-button icon-only (click)="openBookActions()">
@@ -12,9 +12,27 @@
 </ion-header>
 
 <ion-content padding>
-4{{debug}} <br>
+  4{{debug}}
+  <br>
 
-  <ion-list>
+  <ion-list *ngIf="viewMode==1">
+    <ion-item [id]="i" text-wrap *ngFor="let viewLine of viewLines;let i=index">
+      {{i}}
+      <div *ngIf="viewLine.bookLine?.sentences?.length==0">
+        {{viewLine.bookLine.sourceLine}}
+      </div>
+
+      <div *ngIf="viewLine.bookLine?.sentences?.length!=0">
+        <div *ngFor="let s of viewLine.bookLine?.sentences">
+          <div (click)="toastTranslation(s.sentenceDest,i)">
+            {{s.sentenceSource}}
+          </div>
+        </div>
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <ion-list *ngIf="viewMode==0">
     <button [id]="i" ion-item text-wrap *ngFor="let viewLine of viewLines;let i=index" (click)="selectLine(viewLine,i)">
       {{i}}
       <div *ngIf="!viewLine.showTranslation">
@@ -23,13 +41,13 @@
 
       <div *ngIf="viewLine.showTranslation">
 
-        <div *ngIf="viewLine.bookLine.sentences.length==0">
+        <div *ngIf="viewLine.bookLine?.sentences?.length==0">
           {{viewLine.bookLine.sourceLine}}
         </div>
 
-        <div *ngIf="viewLine.bookLine.sentences.length!=0">
+        <div *ngIf="viewLine.bookLine?.sentences?.length!=0">
 
-          <div *ngFor="let s of viewLine.bookLine.sentences">
+          <div *ngFor="let s of viewLine.bookLine?.sentences">
             {{s.sentenceSource}}
             <hr>
             <small>{{s.sentenceDest}}</small>
@@ -37,11 +55,7 @@
             <br>
           </div>
         </div>
-
-
       </div>
-
-
     </button>
   </ion-list>
 

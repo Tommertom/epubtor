@@ -19,12 +19,12 @@
   <br>
 
   <hr>
-  <span (click)="cleanWrong()"> Wrong words</span>
+  <span (click)="cleanList()"> Wrong words</span>
   <br>
   <div *ngFor="let word of wrongwords">{{word}} - </div>
   <br>
   <hr>
-  <span>Good words</span>
+  <span (click)="cleanList()">Good words</span>
   <br>
   <div *ngFor="let word of goodwords">{{word}} - </div>
   <br>

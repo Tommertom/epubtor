@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { Events, NavController, AlertController, ActionSheetController } from 'ionic-angular';
-
+import { Events, NavController, AlertController, ActionSheetController, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { BookTranslator, Book } from '../../providers/booktranslater.provider';
 
@@ -15,8 +14,11 @@ export class HomePage {
   lastScrollLine = 0;
   transCount = 0;
   debug: string = "";
+  viewMode: number = 0;
+  lastClicked: number = 0;
 
   constructor(
+    private toastCtrl: ToastController,
     public events: Events,
     private bookTranslatorService: BookTranslator,
     private actionsheetCtrl: ActionSheetController,
@@ -45,6 +47,14 @@ export class HomePage {
       //   this.addDebug(val)
     })
 
+
+    this.storage.get('viewMode')
+      .then(val => {
+        if (val) this.viewMode = val
+        else this.viewMode = 0;
+      })
+
+
     this.storage.forEach((value, key, num) => {
       this.addDebug({ key: key, value: JSON.stringify(value).length, index: num })
     })
@@ -59,8 +69,6 @@ export class HomePage {
       { key: 'book-secuestro', url: 'assets/txtbooks/El Secuestro - John Grisham.txt' },
       { key: 'book-brujas', url: 'assets/txtbooks/Las Brujas - Roald Dahl.txt' },
       { key: 'book-mathilda', url: 'assets/txtbooks/Matilda - Roald Dahl.txt' },
-      
-      
       //   { key: 'book-nottinghill', url: 'assets/txtbooks/Notting Hill.srt' },
       //  { key: 'book-montypython', url: 'assets/txtbooks/Monty.Python.And.The.Holy.Grail.1975.srt' },
       { key: 'book-hobbitsrt', url: 'assets/txtbooks/the-hobbit-an-unexpected-journey-yify-spanish.srt' },
@@ -68,7 +76,7 @@ export class HomePage {
       { key: 'book-universoparalelo', url: 'assets/txtbooks/universoparalelo.txt' },
       { key: 'book-thehobbit', url: 'assets/txtbooks/El Hobbit - J  R  R  Tolkien.txt' }
     ]
-    let booklist;
+    let booklist = [];
     this.bookTranslatorService.getBooklist()
       .then(val => {
         console.log('booklist', val)
@@ -94,7 +102,7 @@ export class HomePage {
 
   loadAndViewBook(data) {
     this.bookTranslatorService.getBook(data)
-      .then(book => {
+      .then((book: Book) => {
         this.viewLines = [];
         this.lastScrollLine = 0;
         this.book = book;
@@ -111,7 +119,6 @@ export class HomePage {
 
         this.addDebug({ tc: tc, lc: lc })
         console.log('Loaded book', this.book, tc, lc)
-
 
         if (this.book)
           this.storage.get('lastClicked' + this.book.title)
@@ -167,7 +174,7 @@ export class HomePage {
     let actionSheet = this.actionsheetCtrl.create({
       title: 'Book actions',
       // cssClass: 'action-sheets-basic-page',
-      buttons: [
+      buttons: [ 
         {
           text: 'Open loaded books',
           //  role: 'destructive',
@@ -185,8 +192,23 @@ export class HomePage {
           }
         },
         {
-          text: 'Delete all loaded books',
+          text: 'Toggle view mode',
           //  role: 'destructive',
+          //  icon: !this.platform.is('ios') ? 'trash' : null,
+          handler: () => {
+            this.viewMode = this.viewMode += 1;
+            if (this.viewMode > 1) this.viewMode = 0;
+            this.storage.set('viewMode', this.viewMode)
+
+            //console.log('Lastclicked ', this.lastClicked)
+            setTimeout(() => {
+              document.getElementById('' + this.lastClicked).scrollIntoView({ behavior: "smooth" });
+            }, 500);
+          }
+        },
+        {
+          text: 'Delete all loaded books',
+          role: 'destructive',
           //  icon: !this.platform.is('ios') ? 'trash' : null,
           handler: () => {
             this.bookTranslatorService.deleteBooks();
@@ -234,11 +256,26 @@ export class HomePage {
     }, 250);
   }
 
+  toastTranslation(line, i) {
+    //console.log('TOAST', line);
+    let toast = this.toastCtrl.create({
+      message: line,
+      duration: 5000,
+      position: 'top',
+      showCloseButton: true
+    });
+
+    this.lastClicked = i;
+    this.storage.set('lastClicked' + this.book.title, i);
+    toast.present();
+  }
+
   selectLine(item, i) {
 
     if (item.bookLine.sourceLine.length > 0) {
 
-      this.storage.set('lastClicked' + this.book.title, i);
+      this.lastClicked = i;
+      this.storage.set('lastClicked' + this.book.title, this.lastClicked);
 
       //  console.log('toggle', item, i);
       item.showTranslation = !item.showTranslation;
@@ -246,8 +283,9 @@ export class HomePage {
       if (this.viewLines[i]['bookLine']['destLine'] == '') {
         this.bookTranslatorService.getTranslation(this.book, i)
           .then((val) => {
-            //            console.log('STUFF received', val, val['sentences'].length)
-            this.viewLines[i]['bookLine'] = val;
+            //console.log('STUFF received', val)
+            if (val)
+              if (val['sentences']) this.viewLines[i]['bookLine'] = val;
           })
       }
     }

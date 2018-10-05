@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
 
 
 import { HttpClient } from '@angular/common/http';
@@ -16,7 +17,7 @@ export class ContactPage {
   conjugation: string = "";
   verbTree: Object = {};
 
-  constructor(public navCtrl: NavController, private http: HttpClient) {
+  constructor(private storage:Storage,public navCtrl: NavController, private http: HttpClient) {
     this.loadVerbs();
   }
 
@@ -53,53 +54,66 @@ export class ContactPage {
   }
 
   loadVerbs() {
-    this.http.get('assets/dict/jehle_verb_database.csv', { responseType: 'text' })
-      .subscribe((data) => {
-        let loadedLines = data.split("\n");
-        let verbList = [];
-        loadedLines.map(line => {
-          verbList.push(
-            line.split('"').filter(item => (item != ',') && (item.length > 1)))
-        })
+    //this.loadOthers();
+    this.storage.get('verbTree')
+      .then((val) => {
+        if (val) {
+          console.log('Gotten from store')
+          this.verbTree = val;
+          return Promise.resolve(true)
+        }
+        else return this.http.get('assets/dict/jehle_verb_database.csv', { responseType: 'text' })
+          .toPromise()
+          .then((data) => {
+            let loadedLines = data.split("\n");
+            let verbList = [];
+            loadedLines.map(line => {
+              verbList.push(
+                line.split('"').filter(item => (item != ',') && (item.length > 1)))
+            })
 
-        this.verbTree = {}
-        verbList.map(verbMeta => {
+            this.verbTree = {}
+            verbList.map(verbMeta => {
+              let verb = verbMeta[0];
+              let infinitivetranslation = verbMeta[1];
+              let mood = verbMeta[2];
+              let tense = verbMeta[5];
+              let verbtranslation = verbMeta[6];
+              let conjug = verbMeta.slice(7, 13);
+              let gerund = verbMeta[13];
+              let gerundtranslation = verbMeta[14];
+              let pastparticiple = verbMeta[15];
+              let pastparticipletranslation = verbMeta[16];
 
-          let verb = verbMeta[0];
-          let infinitivetranslation = verbMeta[1];
-          let mood = verbMeta[2];
-          let tense = verbMeta[5];
-          let verbtranslation = verbMeta[6];
-          let conjug = verbMeta.slice(7, 13);
-          let gerund = verbMeta[13];
-          let gerundtranslation = verbMeta[14];
-          let pastparticiple = verbMeta[15];
-          let pastparticipletranslation = verbMeta[16];
+              // create a new item if the verb does not exist
+              if (typeof this.verbTree[verb] == 'undefined')
+                this.verbTree[verb] = {
+                  translation: infinitivetranslation,
+                  moods: {},
+                  gerund: { gerund: gerund, gerundtranslation: gerundtranslation },
+                  pastparticiple: { pastparticiple: pastparticiple, pastparticipletranslation: pastparticipletranslation }
+                }
+              // create the insertion point for the tense
+              if (typeof this.verbTree[verb]['moods'][mood] == 'undefined')
+                this.verbTree[verb]['moods'][mood] = {};
 
-          // create a new item if the verb does not exist
-          if (typeof this.verbTree[verb] == 'undefined')
-            this.verbTree[verb] = {
-              translation: infinitivetranslation,
-              moods: {},
-              gerund: { gerund: gerund, gerundtranslation: gerundtranslation },
-              pastparticiple: { pastparticiple: pastparticiple, pastparticipletranslation: pastparticipletranslation }
-            }
-          // create the insertion point for the tense
-          if (typeof this.verbTree[verb]['moods'][mood] == 'undefined')
-            this.verbTree[verb]['moods'][mood] = {};
+              // add the leaf
+              this.verbTree[verb]['moods'][mood][tense] = {
+                conjugation: conjug,
+                translation: verbtranslation
+              }
+            })
 
-          // add the leaf
-          this.verbTree[verb]['moods'][mood][tense] = {
-            conjugation: conjug,
-            translation: verbtranslation
-          }
-        })
-
-        console.log('VERBTREE', this.verbTree);
+            console.log('Gotten from http')
+            this.storage.set('verbTree', this.verbTree);
+          })
+      })
+      .then(() => {
+        if (this.verbTree['1infinitive']) delete this.verbTree['1infinitive'];
         this.items = Object.keys(this.verbTree);
-        //this.verbList = Object.keys(verbTree);
+        console.log('VERBTREE', this.verbTree);
+       
       })
   }
-
 
 }

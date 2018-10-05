@@ -10,7 +10,6 @@ import { ToastController } from 'ionic-angular';
 {
   providedIn: 'root',
 }
-https://www.e-stories.org/read-stories.php?sto=14537
 */
 
 
@@ -18,6 +17,8 @@ export interface Book {
     title: string;
     booklines: Array<BookLine>;
     storeKey: string;
+    lines: number;
+    translated: number;
 }
 
 export interface BookLine {
@@ -113,7 +114,6 @@ export class BookTranslator {
                 }
 
                 // and put the book in storage
-                // side effect
                 this.storage.set(storeKey, book);
                 console.log('Book loaded from URL', book);
 
@@ -138,6 +138,19 @@ export class BookTranslator {
     getBook<Book>(bookKey: string) {
         return this.storage.ready()
             .then(() => { return this.storage.get(bookKey) })
+            .then((book: Book) => {
+                if (book) {
+                    book['lines'] = 0;
+                    book['translated'] = 0;
+                    book['booklines'].map(line => {
+                        if (line.destLine.length > 0) book['translated'] += 1;
+                        book['lines'] += 1;
+                    })
+
+                    // console.log('Statistics ', book)
+                }
+                return book;
+            })
     }
 
 
@@ -158,6 +171,7 @@ export class BookTranslator {
         if (book.booklines[index].destLine == "")
             res = this.getGoogleTranslation('es', 'en', book.booklines[index].sourceLine)
                 .toPromise()
+
                 .then(val => {
                     //console.log('gr  ')
                     book.booklines[index].sourceLine = val.sourceLine;
@@ -174,15 +188,16 @@ export class BookTranslator {
 
                     this.presentToast(val.destLine.substring(0, 50) + ' ' + tc + ':' + lc);
                     console.log('translation progress', tc, lc)
-//                    this.storage.set(book.storeKey, book)
-  //                      .then(val => {
-                            // this.presentToast('saved ' + val)
+                    //                    this.storage.set(book.storeKey, book)
+                    //                      .then(val => {
+                    // this.presentToast('saved ' + val)
 
-                            //console.log('saved val', val)
-    //                    })
+                    //console.log('saved val', val)
+                    //                    })
 
                     return Promise.resolve(book.booklines[index]);
                 })
+                .catch(err => { console.log('ERRO HTTP', err) })
         else res = Promise.resolve(book.booklines[index]);
 
         return res;

@@ -9,6 +9,7 @@ import { NavController, AlertController } from 'ionic-angular';
 })
 export class AboutPage {
 
+  wordsDone = [];
   verbTree = {};
   otherTree = {};
   question: string = ".";
@@ -28,40 +29,29 @@ export class AboutPage {
     this.storage.get('configQuiz')
       .then(val => {
         if (val) {
-
-          
           this.mode = val.mode;
           this.history = val.history;
           this.wrongwords = val.wrongwords;
-
           if (val.goodwords) this.goodwords = val.goodwords;
-          
         }
-        //this.nextQuestion();
       })
   }
 
   answerSelected(answer) {
-
-    //  console.log('Answer selected', answer, this.word, this.verbTree[this.word]['translation'])
-
     if (this.word == answer.word) {
-      this.goodwords.push(answer.word+' '+ this.verbTree[answer.word]['translation'])
-      this.nextQuestion()
+      this.goodwords = [answer.word + ' ' + this.verbTree[answer.word]['translation']].concat(this.goodwords);
     }
     else {
-      this.wrongwords.push(answer.word+' '+ this.verbTree[answer.word]['translation']);
-      this.wrongwords.push(this.word+' '+ this.verbTree[this.word]['translation']);
-
+      this.wrongwords = [answer.word + ' ' + this.verbTree[answer.word]['translation']].concat(this.wrongwords);
+      this.wrongwords = [this.word + ' ' + this.verbTree[this.word]['translation']].concat(this.wrongwords);
       answer.text = '! ' + answer.word + ' -> ' + this.verbTree[answer.word]['translation']
-      // console.log('WRONGWORDS', this.wrongwords)
     }
 
     this.storage.set('configQuiz', {
       mode: this.mode,
       history: this.history,
       wrongwords: this.wrongwords,
-      goodwords:this.goodwords
+      goodwords: this.goodwords
     })
   }
 
@@ -72,10 +62,13 @@ export class AboutPage {
       this.history['mode'] = [];
     this.history['mode'].push(this.word);
 
-    // console.log('SADSAD', this.question, this.answers, this.word, this.mode)
-    // lets find a new word
-    let item = Math.floor(Math.random() * this.maxwordcount);
-    this.word = this.words[item];
+    this.wordsDone.push(this.word);
+
+    while (this.wordsDone.indexOf(this.word) > -1) {
+      let item = Math.floor(Math.random() * this.maxwordcount);
+      this.word = this.words[item];
+     // console.log('Words done', this.wordsDone, this.word,item);
+    }
 
     // empty the answers
     for (let i = 0; i < this.answers.length; i++) {
@@ -107,34 +100,28 @@ export class AboutPage {
         if (i != aposition) this.answers[i] = { text: randomword, word: randomword }; //
       }
     }
-    //console.log('Question nd stuff', this.answers, this.word, this.question, this.verbTree[this.word]['translation']);
   }
 
-
-  cleanWrong() {
+  cleanList() {
     let confirm = this.alerCtrl.create({
-      title: 'Remove wrong words?',
+      title: 'Remove list of words?',
       message: 'Do you agree to?',
       buttons: [
         {
-          text: 'Disagree',
-          handler: () => {
-            //console.log('Disagree clicked');
-          }
+          text: 'Disagree'
         },
         {
           text: 'Agree',
           handler: () => {
-            //console.log('Agree clicked');
             this.wrongwords = [];
+            this.goodwords = [];
           }
         }
       ]
     });
     confirm.present()
-
-
   }
+
   swapMode() {
     if (this.mode == 'ES-EN') this.mode = 'EN-ES'
     else this.mode = 'ES-EN'
@@ -144,84 +131,90 @@ export class AboutPage {
   loadOthers() {
     this.http.get('assets/dict/spanishdict.json')
       .subscribe((data) => {
-        console.log('SEE DATA', data['dic']['l']);
 
-       // let excludedt = ['{prop}', '{v}', '{suffix}', '{prefix}'];
+        this.otherTree = {};
+
+        // let excludedt = ['{prop}', '{v}', '{suffix}', '{prefix}'];
         let includet = ['{f}', '{m}'];
 
-        //let words = {};
         let sets = data['dic']['l'];
         let count = 0;
         sets.map(set => {
           let wordsinset = set['w'];
-          // console.log(' words in set', wordsinset)
           wordsinset.map(word => {
-            // if (excludedt.indexOf(word.t) < 0) {
             if (includet.indexOf(word.t) > -1) {
               count += 1;
-
-              if (Math.floor(Math.random() * 10) > 4)
-                this.verbTree[word.c] = { translation: word.d, type: word.t }
+              // if (Math.floor(Math.random() * 10) > 4)
+              this.otherTree[word.c] = { translation: word.d, type: word.t }
             }
           })
         })
 
-        console.log('WORDSSSS', this.verbTree, count)
-
-        this.loadVerbs();
+        console.log('SEE DATA', Object.keys(this.otherTree).length, this.otherTree);
       })
   }
 
   loadVerbs() {
-    this.http.get('assets/dict/jehle_verb_database.csv', { responseType: 'text' })
-      .subscribe((data) => {
-        let loadedLines = data.split("\n");
-        let verbList = [];
-        loadedLines.map(line => {
-          verbList.push(
-            line.split('"').filter(item => (item != ',') && (item.length > 1)))
-        })
+    //this.loadOthers();
+    this.storage.get('verbTree')
+      .then((val) => {
+        if (val) {
+          console.log('Gotten from store')
+          this.verbTree = val;
+          return Promise.resolve(true)
+        }
+        else return this.http.get('assets/dict/jehle_verb_database.csv', { responseType: 'text' })
+          .toPromise()
+          .then((data) => {
+            let loadedLines = data.split("\n");
+            let verbList = [];
+            loadedLines.map(line => {
+              verbList.push(
+                line.split('"').filter(item => (item != ',') && (item.length > 1)))
+            })
 
-        this.verbTree = {}
-        verbList.map(verbMeta => {
+            this.verbTree = {}
+            verbList.map(verbMeta => {
+              let verb = verbMeta[0];
+              let infinitivetranslation = verbMeta[1];
+              let mood = verbMeta[2];
+              let tense = verbMeta[5];
+              let verbtranslation = verbMeta[6];
+              let conjug = verbMeta.slice(7, 13);
+              let gerund = verbMeta[13];
+              let gerundtranslation = verbMeta[14];
+              let pastparticiple = verbMeta[15];
+              let pastparticipletranslation = verbMeta[16];
 
-          let verb = verbMeta[0];
-          let infinitivetranslation = verbMeta[1];
-          let mood = verbMeta[2];
-          let tense = verbMeta[5];
-          let verbtranslation = verbMeta[6];
-          let conjug = verbMeta.slice(7, 13);
-          let gerund = verbMeta[13];
-          let gerundtranslation = verbMeta[14];
-          let pastparticiple = verbMeta[15];
-          let pastparticipletranslation = verbMeta[16];
+              // create a new item if the verb does not exist
+              if (typeof this.verbTree[verb] == 'undefined')
+                this.verbTree[verb] = {
+                  translation: infinitivetranslation,
+                  moods: {},
+                  gerund: { gerund: gerund, gerundtranslation: gerundtranslation },
+                  pastparticiple: { pastparticiple: pastparticiple, pastparticipletranslation: pastparticipletranslation }
+                }
+              // create the insertion point for the tense
+              if (typeof this.verbTree[verb]['moods'][mood] == 'undefined')
+                this.verbTree[verb]['moods'][mood] = {};
 
-          // create a new item if the verb does not exist
-          if (typeof this.verbTree[verb] == 'undefined')
-            this.verbTree[verb] = {
-              translation: infinitivetranslation,
-              moods: {},
-              gerund: { gerund: gerund, gerundtranslation: gerundtranslation },
-              pastparticiple: { pastparticiple: pastparticiple, pastparticipletranslation: pastparticipletranslation }
-            }
-          // create the insertion point for the tense
-          if (typeof this.verbTree[verb]['moods'][mood] == 'undefined')
-            this.verbTree[verb]['moods'][mood] = {};
+              // add the leaf
+              this.verbTree[verb]['moods'][mood][tense] = {
+                conjugation: conjug,
+                translation: verbtranslation
+              }
+            })
 
-          // add the leaf
-          this.verbTree[verb]['moods'][mood][tense] = {
-            conjugation: conjug,
-            translation: verbtranslation
-          }
-        })
-
-
+            console.log('Gotten from http')
+            this.storage.set('verbTree', this.verbTree);
+          })
+      })
+      .then(() => {
+        if (this.verbTree['1infinitive']) delete this.verbTree['1infinitive'];
         this.words = Object.keys(this.verbTree);
         this.maxwordcount = this.words.length;
         console.log('VERBTREE', this.verbTree, this.maxwordcount);
         this.nextQuestion();
-        //this.verbList = Object.keys(verbTree);
       })
   }
-
 }
