@@ -1,4 +1,3 @@
-import { Pro } from '@ionic/pro';
 import { Component } from '@angular/core';
 import { Events, NavController, AlertController, ActionSheetController, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
@@ -18,6 +17,7 @@ export class HomePage {
   debug: string = "";
   viewMode: number = 0;
   lastClicked: number = 0;
+  lastToast;
 
   constructor(
     private toastCtrl: ToastController,
@@ -44,11 +44,6 @@ export class HomePage {
 
   ionViewDidEnter() {
 
-    Pro.deploy.getCurrentVersion()
-      .then(info => {
-        this.addDebug(info);
-        console.log('Pro v', info)
-      })
 
     this.addDebug(this.storage.driver);
     this.storage.keys().then(val => {
@@ -266,8 +261,10 @@ export class HomePage {
   }
 
   toastTranslation(line, i) {
-    //console.log('TOAST', line);
-    let toast = this.toastCtrl.create({
+    console.log('TOAST', this.lastToast);
+
+    if (this.lastToast) this.lastToast.dismissAll();
+    this.lastToast = this.toastCtrl.create({
       message: line,
       duration: 8000,
       position: 'bottom',
@@ -276,7 +273,7 @@ export class HomePage {
 
     this.lastClicked = i;
     this.storage.set('lastClicked' + this.book.title, i);
-    toast.present();
+    this.lastToast.present();
   }
 
   selectLine(item, i) {
