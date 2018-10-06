@@ -1,7 +1,9 @@
+import { Pro } from '@ionic/pro';
 import { Component } from '@angular/core';
 import { Events, NavController, AlertController, ActionSheetController, ToastController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { BookTranslator, Book } from '../../providers/booktranslater.provider';
+
 
 @Component({
   selector: 'page-home',
@@ -41,6 +43,13 @@ export class HomePage {
   }
 
   ionViewDidEnter() {
+
+    Pro.deploy.getCurrentVersion()
+      .then(info => {
+        this.addDebug(info);
+        console.log('Pro v', info)
+      })
+
     this.addDebug(this.storage.driver);
     this.storage.keys().then(val => {
       console.log('keys ', val)
@@ -174,7 +183,7 @@ export class HomePage {
     let actionSheet = this.actionsheetCtrl.create({
       title: 'Book actions',
       // cssClass: 'action-sheets-basic-page',
-      buttons: [ 
+      buttons: [
         {
           text: 'Open loaded books',
           //  role: 'destructive',
