@@ -261,7 +261,7 @@ export class HomePage {
   }
 
   toastTranslation(line, i) {
-    console.log('TOAST', this.lastToast);
+ //   console.log('TOAST', this.lastToast);
 
     if (this.lastToast) this.lastToast.dismissAll();
     this.lastToast = this.toastCtrl.create({
