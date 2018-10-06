@@ -248,6 +248,7 @@ export class BookTranslator {
 
         if (index == book.booklines.length) {
             this.presentToast('Fully translated')
+            this.saveBook(book)
             return Promise.resolve(true)
         }
         else {

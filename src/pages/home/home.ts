@@ -260,8 +260,8 @@ export class HomePage {
     //console.log('TOAST', line);
     let toast = this.toastCtrl.create({
       message: line,
-      duration: 5000,
-      position: 'top',
+      duration: 8000,
+      position: 'bottom',
       showCloseButton: true
     });
 
