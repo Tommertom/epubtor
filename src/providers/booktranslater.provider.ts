@@ -265,10 +265,11 @@ export class BookTranslator {
 
                         setTimeout(() => {
                             return this.translateBook(book, index + 1);
-                        }, 1000 + Math.floor(Math.random() * 8000))
+                        }, 2500 + Math.floor(Math.random() * 8000))
                     })
                     .catch(err => {
-                        console.log('ERR: GOOGLE', err)
+                        console.log('ERR: GOOGLE', err);
+                        this.presentToast('GOOGLE DONT LIKE');
                     })
 
             }
