@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      {{book?.title}} ({{book?.translated}}/{{book?.lines}})
+    </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only (click)="openBookActions()">
+        <ion-icon name='more'></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  {{debug}}
+
+  <span *ngIf="linesAndQuestions.length>0">
+    <h1 (click)="askQuestion()" *ngIf="!questionShown">
+      {{linesAndQuestions[itemIndex].line}}
+    </h1>
+    <span *ngIf="!questionShown">
+      {{linesAndQuestions[itemIndex].question}}
+    </span>
+    <ion-textarea style="border-color: black;border:2px" type="text" *ngIf="questionShown" [(ngModel)]="linesAndQuestions[itemIndex].question">
+
+    </ion-textarea>
+
+  </span>
+  <br>
+  <button ion-button full (click)="askQuestion()"></button>
+  <button ion-button full (click)="nextItem()"></button>
+</ion-content>

@@ -7,6 +7,7 @@ import { AboutPage } from '../pages/about/about';
 import { ContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
+import { ActivePage } from './../pages/active/active';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -19,6 +20,7 @@ import { BookTranslator } from '../providers/booktranslater.provider';
 @NgModule({
   declarations: [
     MyApp,
+    ActivePage,
     AboutPage,
     ContactPage,
     HomePage,
@@ -27,7 +29,7 @@ import { BookTranslator } from '../providers/booktranslater.provider';
   imports: [
     IonicStorageModule.forRoot({
       name: '__mydb',
-      driverOrder: [ 'sqlite', 'indexeddb','websql']
+      driverOrder: ['sqlite', 'indexeddb', 'websql']
     }),
     HttpClientModule,
     BrowserModule,
@@ -36,6 +38,7 @@ import { BookTranslator } from '../providers/booktranslater.provider';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
+    ActivePage,
     AboutPage,
     ContactPage,
     HomePage,
