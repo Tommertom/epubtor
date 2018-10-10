@@ -25,7 +25,7 @@ export class TabsPage {
       let tabIndex;
       console.log('Getting tabindex',val)
       if (val) tabIndex = val
-      else tabIndex = 2;
+      else tabIndex = 0;
       this.tabRef.select(tabIndex);
     })
   }

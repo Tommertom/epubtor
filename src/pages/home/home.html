@@ -19,7 +19,7 @@
     <ion-item [id]="i" text-wrap *ngFor="let viewLine of viewLines;let i=index">
       {{i}}
       <div *ngIf="viewLine.bookLine?.sentences?.length==0">
-        {{viewLine.bookLine.sourceLine}}
+       <div (click)="selectLine(viewLine,i)"> {{viewLine.bookLine.sourceLine}} </div>  
       </div>
 
       <div *ngIf="viewLine.bookLine?.sentences?.length!=0">
