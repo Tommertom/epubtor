@@ -269,7 +269,7 @@ export class HomePage {
     if (this.lastToast) this.lastToast.dismissAll();
     this.lastToast = this.toastCtrl.create({
       message: line,
-      duration: 8000,
+      duration: 10000,
       position: 'bottom',
       showCloseButton: true
     });
