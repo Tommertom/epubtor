@@ -308,7 +308,9 @@ export class HomePage {
             //console.log('STUFF received', val)
             if (val)
               if (val['sentences']) this.viewLines[i]['bookLine'] = val;
-          })
+          
+            this.bookTranslatorService.saveBook(this.book);
+            })
       }
     }
 
