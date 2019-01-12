@@ -219,6 +219,14 @@ export class HomePage {
           }
         },
         {
+          text: 'Save translation',
+          //  role: 'destructive',
+          //  icon: !this.platform.is('ios') ? 'trash' : null,
+          handler: () => {
+            this.bookTranslatorService.saveBook(this.book);
+          }
+        },
+        {
           text: 'Delete all loaded books',
           role: 'destructive',
           //  icon: !this.platform.is('ios') ? 'trash' : null,
