@@ -268,6 +268,7 @@ export class BookTranslator {
                         }, 2500 + Math.floor(Math.random() * 8000))
                     })
                     .catch(err => {
+                        this.saveBook(book);
                         console.log('ERR: GOOGLE', err);
                         this.presentToast('GOOGLE DONT LIKE');
                     })
