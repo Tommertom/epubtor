@@ -73,6 +73,11 @@ export class HomePage {
       { key: 'book-secuestro', url: 'assets/txtbooks/El Secuestro - John Grisham.txt' },
       { key: 'book-brujas', url: 'assets/txtbooks/Las Brujas - Roald Dahl.txt' },
       { key: 'book-mathilda', url: 'assets/txtbooks/Matilda - Roald Dahl.txt' },
+      
+      { key: 'book-dune2', url: 'assets/epub/Dune - Frank Herbert.txt' },
+      { key: 'book-dunemessias', url: 'assets/epub/El Mesias de Dune - Frank Herbert.txt' },
+      { key: 'book-godel', url: 'assets/epub/Godel, Escher, Bach - Douglas R  Hofstadter.txt' },
+     
       //   { key: 'book-nottinghill', url: 'assets/txtbooks/Notting Hill.srt' },
       //  { key: 'book-montypython', url: 'assets/txtbooks/Monty.Python.And.The.Holy.Grail.1975.srt' },
       { key: 'book-hobbitsrt', url: 'assets/txtbooks/the-hobbit-an-unexpected-journey-yify-spanish.srt' },
